@@ -1,18 +1,67 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import FilterableProductTable from './components/FilterableProductTable';
+import data from "./data.json";
+
 import './App.css';
 
 class App extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      productList: data,
+      inStock: true
+    }
+  }
+
+  handleSearch = (search) => {
+
+    if (search) {
+      let filteredProduct = this.state.productList.data.slice().filter(prod => {
+        return (prod.name.toLowerCase().match(search.toLowerCase()) &&
+          prod.stocked === this.state.inStock)
+      });
+
+      this.setState({
+        productList: { data: filteredProduct }
+      });
+    }
+    else {
+      this.setState({
+        productList: {
+          data: data.data.filter(prod => {
+            return (prod.stocked === this.state.inStock)
+          })
+        }
+      })
+    }
+  }
+
+  filterStock = (stock) => {
+
+    if (stock) {
+      let filteredProduct = this.state.productList.data.slice().filter(prod => {
+        return prod.stocked === stock
+      });
+
+      this.setState({
+        productList: { data: filteredProduct },
+        inStock: stock
+      });
+    }
+    else {
+      this.setState({
+        productList: {data: data.data},
+          inStock: stock
+      });
+    }
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="container">
+        <h1>IronStore</h1>
+        <FilterableProductTable products={this.state.productList} search={this.handleSearch} filterStock={this.filterStock} />
       </div>
     );
   }
